@@ -1,0 +1,40 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'ch.netzwerg:gradle-release-plugin:1.2.3'
+    }
+}
+
+apply plugin: 'maven-publish'
+apply plugin: 'java'
+apply plugin: 'ch.netzwerg.release'
+
+group 'dummy'
+
+release {
+    dependsOn publish
+    push = true // 'true' would e.g. be useful when triggering the release task on a CI server
+    versionSuffix = '-SNAPSHOT' // '.DEV' or '' (empty) could be useful alternatives
+    tagPrefix = 'v' // 'r' or '' (empty) could be useful alternatives
+}
+
+publishing {
+    repositories {
+        maven {
+            // change to point to your repo, e.g. http://my.org/repo
+            url "$buildDir/repo"
+        }
+    }
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId project.group
+            version project.version
+            from components.java
+        }
+    }
+}
